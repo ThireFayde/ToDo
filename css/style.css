@@ -1,0 +1,132 @@
+*{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#app{
+    display: flex;
+    justify-content: center;
+}
+
+#todo{
+    /* background:blue; */
+}
+
+#done{
+    /* background:red; */
+}
+
+.box{
+    width: 300px;
+}
+
+.list{
+    border-radius: 5px;
+    background:#fff;
+    margin: 0 20px 10px;
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.list.doing{
+    background:#fdeff2;
+}
+
+.list.done{
+    background: #eaedf7;
+}
+
+.listHeader{
+    min-height: 60px;
+    font-size: 0.8rem;
+    margin: 0 20px 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+#input{
+    width: 80%
+}
+
+#btn {
+    width: 20%
+}
+
+.list > div{
+}
+
+.listData{
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    padding: 10px 10px 0;
+    font-size: 0.6rem;
+    border-left: solid 1px #ccc;
+    border-right: solid 1px #ccc;
+    border-top: solid 1px #ccc;
+    position: relative;
+}
+
+.listData > div:first-of-type{
+    position: absolute;
+    right: 10px;
+    top:10px;
+    font-size:1.6rem;
+    line-height: 1;
+    font-weight: bold;
+    color:#ddd;
+    z-index: 1;
+}
+
+.listTime{
+    position: relative;
+    z-index: 10;
+}
+
+.listTime > div:last-child{
+    padding:0 0 5px;
+    border-bottom: 1px solid #ccc
+}
+
+.list hr {
+
+}
+
+.cardContent{
+    padding:10px;
+    border-left: solid 1px #ccc;;
+    border-right: solid 1px #ccc;
+    border-bottom: 1px dashed #ccc;
+}
+
+.next{
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    text-align: center;
+    color: #ccc;
+    border-left: solid 1px #ccc;
+    border-right: solid 1px #ccc;
+    border-bottom: solid 1px #ccc;
+    cursor: pointer;
+}
+
+.next:hover{
+    background:#1e50a2;
+    border-left: #1e50a2;
+    border-right: #1e50a2;
+    border-bottom: solid 1px #1e50a2;
+    color:#fff;
+}
+
+.list.doing .next:hover{
+    background:#c53d43;
+    border-left: #c53d43;
+    border-right: #c53d43;
+    border-bottom: solid 1px #c53d43;
+}
+
+.list.done .next:hover{
+    background:#7058a3;
+    border-left: #7058a3;
+    border-right: #7058a3;
+    border-bottom: solid 1px #7058a3;
+}
