@@ -6,9 +6,218 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="css/style.css">
     <title>to doアプリ</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
 </head>
 <body>
-    <div id="app">
+    <div id="root"></div>
+    <script type="text/babel">
+    (() => {
+        const todos = [];
+
+        function TodoHeader(props){
+            const remaining = props.todos.filter(todo => {
+                return !todo.isDone;
+            })
+
+            return (
+                <h1>
+                    <button onClick={props.purge}>Purge</button>
+                    My ToDos
+                    <span>({remaining.length}/{props.todos.length})</span>
+                </h1>
+            )
+        }
+
+        function TodoItem(props){
+            return(
+                <li className={props.todo.isDone ? 'list check' : 'list'}>
+                    <div>
+                        <label>
+                        <div className="listData">
+                        <div>To do</div>
+                        <div className="listContent">
+                            <input type="checkbox"
+                                checked={props.todo.isDone}
+                                onChange={() => props.checkTodo(props.todo)}
+                            />
+                            <div className="listTime">
+                                <div>登録日: {props.todo.date}</div>
+                                <div>締め日: </div>
+                            </div>
+                        </div>
+                        </div>
+                        </label>
+                    </div>
+                    <div className="cardContent">{props.todo.title}</div>
+                    <div className="next" onClick={() => props.deleteTodo(props.todo)}>Done</div>
+                </li>
+            )
+        }
+
+        function TodoList(props) {
+            const todos = props.todos.map(todo => {
+                return(
+                    <TodoItem
+                        key={todo.id}
+                        todo={todo}
+                        checkTodo={props.checkTodo}
+                        deleteTodo={props.deleteTodo}
+                    />
+                )
+            })
+            return (
+                <ul>
+                    {props.todos.length ? todos : <li className="nothing">Nothing to do!</li>}
+                </ul>
+            )           
+        }
+
+        function TodoForm(props) {
+            return (
+                <form onSubmit={props.addTodo}>
+                    <input type="text" value={props.item} onChange={props.updateItem}/>
+                    <input type="submit" value="Add"/>
+                </form>
+            )
+        }
+
+        function getUniqueId(){
+            return new Date().getTime().toString(36) + '-' + Math.random().toString(36);
+        }
+        
+        function getDate(){
+            const today = new Date();
+            const d = today.getMonth()+1
+            return today.getFullYear() + '/' + d + '/' + today.getDate();
+        }
+    
+        class App extends React.Component{
+            constructor(){
+                super();
+                this.state = {
+                    todos: todos,
+                    item: '',
+                    closingDate: ''
+                };
+                this.checkTodo = this.checkTodo.bind(this);
+                this.deleteTodo = this.deleteTodo.bind(this);
+                this.updateItem = this.updateItem.bind(this);
+                this.addTodo = this.addTodo.bind(this);
+                this.purge = this.purge.bind(this);
+            }
+
+            purge() {
+                if (!confirm('are you sure?')){
+                    return;
+                }
+
+                const todos = this.state.todos.filter(todo => {
+                    return !todo.isDone;
+                });
+                this.setState({
+                    todos:todos
+                })
+            }
+
+            addTodo(e){
+                e.preventDefault();
+
+                if(this.state.item.trim() === ""){
+                    return;
+                }
+
+                const item = {
+                    id: getUniqueId(),
+                    title:this.state.item,
+                    date: getDate(),
+                    closingDate: this.state.closingDate,
+                    isDone: false
+                };
+
+                const todos = this.state.todos.slice();
+                todos.push(item);
+                this.setState({
+                    todos: todos,
+                    item: '',
+                    closingDate: ''
+                });
+            }
+
+            deleteTodo(todo){
+                if(!confirm('are you sure?')){
+                    return;
+                }
+                const todos = this.state.todos.slice();
+                const pos = this.state.todos.indexOf(todo);
+
+                todos.splice(pos, 1);
+                this.setState({
+                    todos: todos
+                })
+            }
+
+            checkTodo(todo){
+                const todos = this.state.todos.map(todo => {
+                    return {id: todo.id, title: todo.title, date: todo.date, closingDate: todo.closingDate, isDone: todo.isDone}
+                });
+
+                const pos = this.state.todos.map(todo => {
+                    return todo.id;
+                }).indexOf(todo.id);
+
+                todos[pos].isDone = !todos[pos].isDone;
+                this.setState({
+                    todos: todos
+                });
+            }
+
+            updateItem(e){
+                this.setState({
+                    item: e.target.value
+                });
+            }
+
+            componentDidUpdate(){
+                localStorage.setItem('todos',JSON.stringify(this.state.todos));
+            }
+            componentDidMount(){
+                this.setState({
+                    todos: JSON.parse(localStorage.getItem('todos')) || []
+                })
+            }
+
+            render(){
+                return (
+                    <div id="todo" className="box">
+                        <div className="listHeader">
+                            <TodoHeader
+                                todos={this.state.todos}
+                                purge={this.purge}
+                            />
+                            <TodoForm
+                                item={this.state.item}
+                                updateItem={this.updateItem}
+                                addTodo={this.addTodo}
+                            />
+                        </div>
+                        <TodoList
+                            todos={this.state.todos}
+                            checkTodo={this.checkTodo}
+                            deleteTodo={this.deleteTodo}
+                        />
+                    </div>
+                );
+            }
+        }
+        ReactDOM.render(
+            <App/>,
+            document.getElementById('root')
+        )
+    })();
+    </script>
+    <!-- <div id="app">
         <div id="todo" class="box">
             <div class="listHeader">
                 <h1>To do or Doing</h1>
@@ -28,32 +237,6 @@
                         <div class="cardContent">なめたけなめたけなめたけなめたけなめたけなめたけなめたけなめたけ</div>
                     </div>
                     <div class="next">done</div>
-                </li>
-                <li class="list">
-                    <div>
-                        <div class="listData">
-                            <div>To do</div>
-                            <div class="listTime">
-                                <div>登録日: 2019/2/12</div>
-                                <div>締め日: 2019/2/20</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="cardContent">掃除</div>
-                    <div class="next">doing</div>
-                </li>
-                <li class="list">
-                    <div>
-                        <div class="listData">
-                            <div>To do</div>
-                            <div class="listTime">
-                                <div>登録日: 2019/2/12</div>
-                                <div>締め日: 2019/2/20</div>
-                            </div>
-                        </div>
-                        <div class="cardContent">掃除</div>
-                    </div>
-                    <div class="next">doing</div>
                 </li>
             </ul>
         </div>
@@ -77,6 +260,6 @@
                 </li>
             </ul>
         </div>
-    </div>
+    </div> -->
 </body>
 </html>
